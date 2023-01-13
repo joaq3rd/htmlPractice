@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pokemon Type</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="Pokèdex Search">
+    <ul class="suggestions">
+      <li>Search by typing Pokemon Name or Type</li>
+    </ul>
+  </form>
+<script>
+const endpoint = 'https://raw.githubusercontent.com/joaq3rd/pokemon_ajaxtypeahead/main/pokemon.json';
+
+const pokemon = [];
+fetch(endpoint)
+  .then(blob => blob.json())
+  .then(data => pokemon.push(...data));
+
+function findMatches(wordToMatch, pokemon) {
+  return pokemon.filter(id => {
+    // here we need to figure out if the city or state matches what was searched
+    const regex = new RegExp(wordToMatch, 'gi');
+    return id.name.match(regex) || id.type1.match(regex)
+  });
+}
+
+function displayMatches() {
+  const matchArray = findMatches(this.value, pokemon);
+  const html = matchArray.map(id => {
+    const regex = new RegExp(this.value, 'gi');
+    const pokemonName = id.name.replace(regex, `<span class="hl">${this.value}</span>`);
+    const pokemonType = id.type1.replace(regex, `<span class="hl">${this.value}</span>`);
+    return `
+      <li>}
+        <span class="name">${pokemonName}</span>
+        <span class="type">${pokemonType}</span>
+      </li>
+    `;
+  }).join('');
+  suggestions.innerHTML = html;
+}
+
+const searchInput = document.querySelector('.search');
+const suggestions = document.querySelector('.suggestions');
+
+searchInput.addEventListener('change', displayMatches);
+searchInput.addEventListener('keyup', displayMatches);
+
+</script>
+  </body>
+</html>
